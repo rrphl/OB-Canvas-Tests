@@ -1,4 +1,4 @@
-import { Curtains, Plane, Vec2 } from './src/index.mjs';
+import { Curtains, Plane, Vec2 } from 'src/index.mjs';
 
 window.addEventListener("load", () => {
     // track the mouse positions to send it to the shaders
