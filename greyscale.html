@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>CodePen - Mouse grayscale webgl displacement shader</title>
+	<link rel="stylesheet" href="greyscale.css">
+
+</head>
+
+<body>
+	<!-- partial:index.partial.html -->
+	<div id="page-wrap">
+
+		<!-- will hold our WebGL context -->
+		<div id="canvas"></div>
+
+		<div id="fullwidth-image">
+			<img data-sampler="displacedImage" src="artwork.jpg" crossorigin="anonymous" />
+		</div>
+
+
+		<!-- shaders and lib -->
+
+		<script id="mouse-displacement-vs" type="x-shader/x-vertex">
+		  	#ifdef GL_ES
+		  		precision mediump float;
+		  	#endif
+
+		  	// default mandatory variables
+		  	attribute vec3 aVertexPosition;
+		  	attribute vec2 aTextureCoord;
+
+		  	uniform mat4 uMVMatrix;
+		  	uniform mat4 uPMatrix;
+
+		  	// custom variables
+		  	varying vec3 vVertexPosition;
+		  	varying vec2 vTextureCoord;
+        varying vec2 vDisplacedTextureCoord;
+
+		  	varying vec2 vDistortionEffect;
+
+		  	// custom uniforms
+        uniform mat4 displacedImageMatrix;
+		  	uniform vec2 uMousePosition;
+
+		  	void main() {
+		    	vec3 vertexPosition = aVertexPosition;
+
+		    	gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
+
+		    	// varyings
+		    	vTextureCoord = aTextureCoord;
+          vDisplacedTextureCoord = (displacedImageMatrix * vec4(aTextureCoord, 0.0, 1.0)).xy;
+		    	vVertexPosition = vertexPosition;
+
+				vDistortionEffect = uMousePosition - vec2(vertexPosition.x, vertexPosition.y);
+		  	}
+		</script>
+		<script id="mouse-displacement-fs" type="x-shader/x-fragment">
+		  	#ifdef GL_ES
+		  		precision mediump float;
+		  	#endif
+
+		  	varying vec2 vTextureCoord;
+        varying vec2 vDisplacedTextureCoord;
+		  	varying vec2 vDistortionEffect;
+
+		  	// custom uniforms
+		  	uniform float uDisplacementStrength;
+
+		  	// our textures samplers
+		  	uniform sampler2D displacedImage;
+		  	uniform sampler2D canvasTexture;
+
+		  	void main( void ) {
+		 		// our texture coords
+			  	vec2 textureCoords = vTextureCoord;
+
+				// get our canvas texture
+		   		vec4 mouseEffect = texture2D(canvasTexture, textureCoords);
+
+				// apply displacement to the texture coords based on our canvas texture RGB
+				textureCoords  = vDisplacedTextureCoord + mouseEffect .r * vDistortionEffect * (uDisplacementStrength / 10.0);
+
+				// get our image texture
+			 	vec4 finalColor = texture2D(displacedImage, textureCoords);
+
+			 	// get a B&W version of our image texture
+				vec4 finalBW = vec4(1.0);
+				finalBW.rgb = vec3(finalColor.r * 0.3 + finalColor.g * 0.59 + finalColor.b * 0.11);
+
+				// mix both texture based on our canvas texture
+				finalColor = mix(finalColor, finalBW, mouseEffect.r);
+
+				// that's all folks!
+		  		gl_FragColor = finalColor;
+	  		}
+		</script>
+		<!-- partial -->
+		<script src='https://www.curtainsjs.com/build/curtains.min.js'></script>
+		<script src="greyscale.js"></script>
+
+</body>
+
+</html>

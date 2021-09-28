@@ -1,0 +1,45 @@
+@media screen {
+
+    html, body {
+        min-height: 100%;
+    }
+
+    body {
+        margin: 0;
+        font-size: 18px;
+        font-family: Verdana, sans-serif;
+        background: #fff;
+        line-height: 1.4;
+
+        overflow: hidden;
+    }
+
+    #page-wrap {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /*** canvas ***/
+
+    #canvas {
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+    }
+
+
+    .curtain {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+
+    .curtain img, .curtain canvas {
+        display: none;
+    }
+
+
+}

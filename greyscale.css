@@ -1,0 +1,59 @@
+@media screen {
+
+    html, body {
+        min-height: 100%;
+    }
+
+    body {
+        margin: 0;
+        font-size: 18px;
+        font-family: Verdana, sans-serif;
+        background: #ffffff;
+        line-height: 1.4;
+    }
+
+    #page-wrap {
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /*** canvas ***/
+
+    #canvas {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        left: 0;
+    }
+
+
+    #fullwidth-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    #fullwidth-image img, #fullwidth-image canvas {
+        display: none;
+    }
+
+    /* handling WebGL context errors */
+
+    .no-webgl #fullwidth-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .no-webgl #fullwidth-image img {
+        display: block;
+        object-fit: cover;
+        min-width: 100%;
+        min-height: 100%;
+    }
+}
