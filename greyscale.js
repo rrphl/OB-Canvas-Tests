@@ -1,19 +1,19 @@
 var params = {
-  webGLCanvasID: "canvas",
-  planeElementID: "fullwidth-image",
-  
-  // TWEAK THOSE VALUES TO CHANGE OVERALL EFFECT
-  
-  // size of the effect (0: no effect, 1: full window)
-  pointerSize: 0.25,
-  // how much to increase/decrease opacity on each frame
-  opacitySpeed: 0.0125,
-  // strength of the velocity of the mouse effect
-  velocityStrength: 0.25,
-  // the bigger the more displacement
-  displacementStrength: 0.25,
-  // does not change anything visually, but the smaller the scale the better the performance
-  canvasScale: 0.125, 
+    webGLCanvasID: "canvas",
+    planeElementID: "fullwidth-image",
+
+    // TWEAK THOSE VALUES TO CHANGE OVERALL EFFECT
+
+    // size of the effect (0: no effect, 1: full window)
+    pointerSize: 0.1,
+    // how much to increase/decrease opacity on each frame
+    opacitySpeed: 0.0125,
+    // strength of the velocity of the mouse effect
+    velocityStrength: 0.25,
+    // the bigger the more displacement
+    displacementStrength: 0.25,
+    // does not change anything visually, but the smaller the scale the better the performance
+    canvasScale: 0.125,
 };
 
 // look at window.onload on line 315
@@ -29,10 +29,10 @@ function MouseEffect(params) {
 /*
  * Init everything
  */
-MouseEffect.prototype.init = function(params) {
+MouseEffect.prototype.init = function (params) {
 
     this.curtains = new Curtains({
-      container: params.webGLCanvasID
+        container: params.webGLCanvasID
     });
 
     this.plane = null;
@@ -65,7 +65,7 @@ MouseEffect.prototype.init = function(params) {
     this.canvas = null;
     this.canvasContext = null;
 
-    if(
+    if (
         !document.getElementById(params.webGLCanvasID) ||
         !document.getElementById(params.planeElementID)
     ) {
@@ -78,9 +78,9 @@ MouseEffect.prototype.init = function(params) {
 /*
  * Resize the mouse canvas
  */
-MouseEffect.prototype.resize = function() {
+MouseEffect.prototype.resize = function () {
 
-    if(this.canvas && this.canvasContext) {
+    if (this.canvas && this.canvasContext) {
         this.canvas.width = this.planeElement.clientWidth * this.pixelRatio * this.params.canvasScale;
         this.canvas.height = this.planeElement.clientHeight * this.pixelRatio * this.params.canvasScale;
 
@@ -97,20 +97,20 @@ MouseEffect.prototype.resize = function() {
 /*
  * Handle mouse/touch moves and push the positions into an array
  */
-MouseEffect.prototype.handleMovement = function(e) {
+MouseEffect.prototype.handleMovement = function (e) {
 
     this.mouse.position.x = e.clientX;
     this.mouse.position.y = e.clientY;
 
     // touch event
-    if(e.targetTouches) {
+    if (e.targetTouches) {
 
         this.mouse.position.x = e.targetTouches[0].clientX;
         this.mouse.position.y = e.targetTouches[0].clientY;
     }
 
     // always check that the plane is still here
-    if(this.planeElement && this.plane) {
+    if (this.planeElement && this.plane) {
         var mouseAttributes = {
             x: this.mouse.position.x * Math.pow(this.params.canvasScale, 2),
             y: this.mouse.position.y * Math.pow(this.params.canvasScale, 2),
@@ -130,15 +130,15 @@ MouseEffect.prototype.handleMovement = function(e) {
         }
 
         // handle velocity based on past values
-        if(this.mouse.attributes.length > 0) {
+        if (this.mouse.attributes.length > 0) {
             mouseAttributes.velocity = {
                 x: Math.max(-this.params.canvasScale * 1.25, Math.min(this.params.canvasScale * 1.25, mouseAttributes.initialPosition.x - this.mouse.attributes[this.mouse.attributes.length - 1].initialPosition.x)),
                 y: Math.max(-this.params.canvasScale * 1.25, Math.min(this.params.canvasScale * 1.25, mouseAttributes.initialPosition.y - this.mouse.attributes[this.mouse.attributes.length - 1].initialPosition.y)),
             };
         }
-      
+
         // if this is our first mouse move, start drawing again
-        if(this.mouse.attributes.length == 0) {
+        if (this.mouse.attributes.length == 0) {
             this.curtains.enableDrawing();
         }
 
@@ -157,7 +157,7 @@ MouseEffect.prototype.handleMovement = function(e) {
 /*
  * This draws a gradient circle based on mouse attributes positions
  */
-MouseEffect.prototype.drawGradientCircle = function(pointerSize, circleAttributes) {
+MouseEffect.prototype.drawGradientCircle = function (pointerSize, circleAttributes) {
     this.canvasContext.beginPath();
 
     var gradient = this.canvasContext.createRadialGradient(
@@ -188,7 +188,7 @@ MouseEffect.prototype.drawGradientCircle = function(pointerSize, circleAttribute
 /*
  * Drawing onto our canvas
  */
-MouseEffect.prototype.animateCanvas = function() {
+MouseEffect.prototype.animateCanvas = function () {
     // here we will handle our canvas texture animation
     var pointerSize = window.innerWidth > window.innerHeight ?
         Math.floor(this.canvas.height * this.params.pointerSize) :
@@ -206,7 +206,7 @@ MouseEffect.prototype.animateCanvas = function() {
     this.canvasContext.closePath();
 
     // draw all our mouse coords
-    for(var i = 0; i < this.mouse.attributes.length; i++) {
+    for (var i = 0; i < this.mouse.attributes.length; i++) {
         this.drawGradientCircle(pointerSize, this.mouse.attributes[i]);
     }
 }
@@ -215,11 +215,11 @@ MouseEffect.prototype.animateCanvas = function() {
 /*
  * Once the plane is ready we set the event listeners and handle the render loop
  */
-MouseEffect.prototype.handlePlane = function() {
+MouseEffect.prototype.handlePlane = function () {
 
     var self = this;
 
-    self.plane.onReady(function() {
+    self.plane.onReady(function () {
 
         // on resize, update the resolution uniform
         window.addEventListener("resize", self.resize.bind(self), false);
@@ -228,15 +228,15 @@ MouseEffect.prototype.handlePlane = function() {
         document.body.addEventListener("touchmove", self.handleMovement.bind(self), {
             passive: true
         });
-      
+
         // for performance purpose, disable the drawing for now
         self.curtains.disableDrawing();
         // render the first frame only to display the picture
         self.curtains.needRender();
 
-    }).onRender(function() {
+    }).onRender(function () {
 
-        for(var i = 0; i < self.mouse.attributes.length; i++) {
+        for (var i = 0; i < self.mouse.attributes.length; i++) {
             // decrease opacity
             self.mouse.attributes[i].opacity -= self.params.opacitySpeed;
 
@@ -245,19 +245,19 @@ MouseEffect.prototype.handlePlane = function() {
             self.mouse.attributes[i].y += self.mouse.attributes[i].velocity.y * self.params.velocityStrength;
 
             // change scale
-            if(self.mouse.attributes[i].opacity >= 0.5) {
+            if (self.mouse.attributes[i].opacity >= 0.5) {
                 self.mouse.attributes[i].scale += (self.params.opacitySpeed * 2);
             }
             else {
                 self.mouse.attributes[i].scale -= self.params.opacitySpeed;
             }
 
-            if(self.mouse.attributes[i].opacity <= 0) {
+            if (self.mouse.attributes[i].opacity <= 0) {
                 // if element is fully transparent, remove it
                 self.mouse.attributes.splice(i, 1);
-              
+
                 // if this was our last mouse move, disable drawing again
-                if(self.mouse.attributes.length == 0) {
+                if (self.mouse.attributes.length == 0) {
                     self.curtains.disableDrawing();
                 }
             }
@@ -272,7 +272,7 @@ MouseEffect.prototype.handlePlane = function() {
 /*
  * If you want to remove the plane cleanly (like if you're navigating away of this page)
  */
-MouseEffect.prototype.removePlane = function() {
+MouseEffect.prototype.removePlane = function () {
     var self = this;
 
     // remove all events
@@ -284,7 +284,7 @@ MouseEffect.prototype.removePlane = function() {
     self.curtains.removePlane(self.plane);
 
     self.plane = null;
-  
+
     self.canvas = null;
     self.canvasContext = null;
 }
@@ -293,7 +293,7 @@ MouseEffect.prototype.removePlane = function() {
 /*
  * Adds the plane and starts the effect
  */
-MouseEffect.prototype.addPlane = function() {
+MouseEffect.prototype.addPlane = function () {
 
     // parameters to apply to our WebGL plane
     this.planeParams = {
@@ -318,11 +318,11 @@ MouseEffect.prototype.addPlane = function() {
     this.plane = this.curtains.addPlane(this.planeElement, this.planeParams);
 
     // if the plane was created successfully we can go on
-    if(this.plane) {
+    if (this.plane) {
         this.canvas = document.createElement("canvas");
         this.canvas.setAttribute("data-sampler", "canvasTexture");
         this.canvasContext = this.canvas.getContext("2d", { alpha: false });
-      
+
         // load our canvas texture
         this.plane.loadCanvases([this.canvas]);
 
@@ -335,12 +335,12 @@ MouseEffect.prototype.addPlane = function() {
 }
 
 
-window.onload = function() {
+window.onload = function () {
     // init everything
     var mouseEffect = new MouseEffect(params);
 
     // if there's an error during the WebGL context creation
-    mouseEffect.curtains.onError(function() {
+    mouseEffect.curtains.onError(function () {
         document.body.classList.add("no-webgl");
     });
 
